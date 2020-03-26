@@ -1,0 +1,17 @@
+FROM amazonlinux:2.0.20200207.1 as graalvm
+# install graal to amazon linux.
+ENV LANG=en_US.UTF-8
+
+
+RUN yum install -y gcc gcc-c++ libc6-dev  zlib1g-dev curl bash zlib zlib-devel zip gzip tar \
+    && rm -rf /var/cache/yum
+
+ENV GRAAL_VERSION 20.0.0
+ENV JDK_VERSION java11
+ENV GRAAL_FILENAME graalvm-ce-${JDK_VERSION}-linux-amd64-${GRAAL_VERSION}.tar.gz
+
+COPY build/${GRAAL_FILENAME} /tmp/
+RUN tar -zxvf /tmp/${GRAAL_FILENAME} -C /tmp && mv /tmp/graalvm-ce-${JDK_VERSION}-${GRAAL_VERSION} /usr/lib/graalvm \
+  && /usr/lib/graalvm/bin/gu install native-image \
+  && rm -rf /tmp/*
+CMD ["/usr/lib/graalvm/bin/native-image"]

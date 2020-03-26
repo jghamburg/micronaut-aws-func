@@ -1,0 +1,14 @@
+FROM gradle:6.2-jdk11 as builder
+COPY --chown=gradle:gradle . /home/application
+WORKDIR /home/application
+RUN gradle build --no-daemon
+
+FROM jghamburg/graalvm:20.0.0
+COPY --from=builder /home/application/ /home/application/
+WORKDIR /home/application
+RUN /usr/lib/graalvm/bin/native-image --no-server -cp build/libs/aws-func-*-all.jar \
+  && chmod 755 bootstrap \
+  && chmod 755 server \
+  && zip -j function.zip bootstrap server
+EXPOSE 8080
+ENTRYPOINT ["/home/application/server"]
