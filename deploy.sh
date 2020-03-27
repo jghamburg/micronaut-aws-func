@@ -1,5 +1,5 @@
 #!/bin/bash
-export AWS_PROFILE=bestand
+export AWS_PROFILE=infra
 
 docker build -f Dockerfile.jdk11 . -t aws-func
 mkdir -p build
